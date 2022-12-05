@@ -14,6 +14,38 @@ def getHTMLdoc(url):
     return response.text
 
 
+def parse_event(event_raw):
+
+    name = get_event_name(event_raw)
+
+    date = get_event_date(event_raw.select_one(".dates .widget_value"),
+                          event_raw.select_one(".timetable .widget_value"))
+
+    title = get_event_title(event_raw.select_one(".title .widget_value"),
+                            event_raw.select_one(".summary .widget_value"))
+
+    location = get_event_location(
+        event_raw.select_one(".venue_id .widget_value"),
+        event_raw.select_one(".descriptive_location .widget_value"),
+        event_raw.select_one(".address .widget_value .writer_text"))
+
+    thumbnail = get_event_thumbnail(
+        event_raw.select_one(".thumbnail .widget_value img"))
+
+    categories = get_event_categories(
+        event_raw.select_one(".categories_list .widget_value"))
+
+    event_data = {
+        name: {
+            "title": title,
+            "date": date,
+            "location": location,
+            "categories": categories,
+            "thumbnail": thumbnail
+        }
+    }
+
+    print(event_data)
 
 
 def get_event_name(event_raw):
