@@ -43,6 +43,37 @@ def get_event_title(title, summary):
     return title_data
 
 
+def get_event_date(date, time_table):
+
+    time = time_table.select_one(
+        ".writer_text").p.getText() if time_table is not None else "Todo o Dia"
+    # start = date.select_one(".begin_date")
+    start = date.select_one(".begin_date")
+    if start is None:
+        start = date.select_one(".date")
+    else:
+        end = date.select_one(".end_date")
+        end_day = end.find(class_="dias").getText()
+        end_month = end.find(class_="mes_extenso").getText()
+        end_weekday = end.find(class_="dia_semana_extenso").getText()
+
+    start_day = start.find(class_="dias").getText()
+    start_month = start.find(class_="mes_extenso").getText()
+    start_weekday = start.find(class_="dia_semana_extenso").getText()
+
+    date_formatted = {
+        "start_day": start_day,
+        "start_month": start_month,
+        "start_weekday": start_weekday,
+        "end_day": end_day if 'end_day' in locals() else "",
+        "end_month": end_month if 'end_month' in locals() else "",
+        "end_weekday": end_weekday if 'end_weekday' in locals() else "",
+        "time": time
+    }
+    # print(date_formatted)
+
+    return date_formatted
+
 url = "http://em.guimaraes.pt/agenda"
 
 html_doc = getHTMLdoc(url)
