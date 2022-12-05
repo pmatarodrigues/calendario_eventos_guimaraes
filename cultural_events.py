@@ -15,6 +15,21 @@ def get_event_thumbnail(thumb):
     return {"link": link, "alt": alt}
 
 
+def get_event_location(location_detailed, location_simple, address):
+    if location_detailed is None:
+        if location_simple is not None:
+            return {'place': location_simple.getText()}
+    else:
+        data = location_detailed.a['data-location']
+        del data['id']
+        del data['address']
+        place = ""
+        if address is not None:
+            for ad in address.findAll('p'):
+                place += ' ' + ad.getText()
+        data['address'] = place
+        return data
+
 url = "http://em.guimaraes.pt/agenda"
 
 html_doc = getHTMLdoc(url)
