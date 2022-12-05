@@ -36,16 +36,17 @@ def parse_event(event_raw):
         event_raw.select_one(".categories_list .widget_value"))
 
     event_data = {
-        name: {
             "title": title,
             "date": date,
             "location": location,
             "categories": categories,
             "thumbnail": thumbnail
         }
-    }
+    # event_data = {name: {}}
 
-    print(event_data)
+    # event_data_json = json.dumps(event_data)
+    # event_data_json[name].append(title)
+    return event_data
 
 
 def get_event_name(event_raw):
@@ -68,7 +69,7 @@ def get_event_location(location_detailed, location_simple, address):
         if location_simple is not None:
             return {'place': location_simple.getText()}
     else:
-        data = location_detailed.a['data-location']
+        data = json.loads(location_detailed.a['data-location'])
         del data['id']
         del data['address']
         place = ""
@@ -76,6 +77,7 @@ def get_event_location(location_detailed, location_simple, address):
             for ad in address.findAll('p'):
                 place += ' ' + ad.getText()
         data['address'] = place
+        data = json.dumps(data)
         return data
 
 
@@ -118,7 +120,6 @@ def get_event_date(date, time_table):
         "end_weekday": end_weekday if 'end_weekday' in locals() else "",
         "time": time
     }
-    # print(date_formatted)
 
     return date_formatted
 
@@ -132,20 +133,12 @@ soup = BeautifulSoup(html_doc, 'html.parser')
 titulos = soup.findAll('h2')
 
 eventos = {}
-# print(soup.select(".cell .linl_block .linl_inner"))
+
 for event in soup.select('.cell .linl_block .linl_inner'):
     # print(event)
 
     event_data = parse_event(event)
+    title = event.find('h2').getText()
+    eventos[title] = event_data
 
-    titulo = event.find('h2').getText()
-    # print(event.select_one(".summary").p)
-    eventos[titulo] = {
-        "titulo": titulo,
-        # "subtitulo": event.find('.summary p'),
-        # "data": ,
-        # "local": ,
-        # "tema":
-    }
-
-# print(eventos)
+print(json.dumps(eventos))
