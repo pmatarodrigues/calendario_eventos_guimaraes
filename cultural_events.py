@@ -1,4 +1,9 @@
 
+
+def get_event_name(event_raw):
+    return event_raw.select_one(".title .widget_value").h2.getText()
+
+
 url = "http://em.guimaraes.pt/agenda"
 
 html_doc = getHTMLdoc(url)
