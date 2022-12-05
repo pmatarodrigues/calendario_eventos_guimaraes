@@ -42,10 +42,7 @@ def parse_event(event_raw):
         "categories": categories,
         "thumbnail": thumbnail
     }
-    # event_data = {name: {}}
 
-    # event_data_json = json.dumps(event_data)
-    # event_data_json[name].append(title)
     return event_data
 
 
@@ -97,7 +94,6 @@ def get_event_date(date, time_table):
 
     time = time_table.select_one(
         ".writer_text").p.getText() if time_table is not None else "Todo o Dia"
-    # start = date.select_one(".begin_date")
     start = date.select_one(".begin_date")
     if start is None:
         start = date.select_one(".date")
@@ -135,7 +131,6 @@ titulos = soup.findAll('h2')
 eventos = {}
 
 for event in soup.select('.cell .linl_block .linl_inner'):
-    # print(event)
 
     event_data = parse_event(event)
     title = event.find('h2').getText()
