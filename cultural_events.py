@@ -30,6 +30,19 @@ def get_event_location(location_detailed, location_simple, address):
         data['address'] = place
         return data
 
+
+def get_event_title(title, summary):
+
+    title_data = {
+        "title":
+        title.h2.getText(),
+        "summary":
+        summary.p.getText().replace("\xa0", ". ")
+        if summary is not None else ""
+    }
+    return title_data
+
+
 url = "http://em.guimaraes.pt/agenda"
 
 html_doc = getHTMLdoc(url)
