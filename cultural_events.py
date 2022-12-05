@@ -36,12 +36,12 @@ def parse_event(event_raw):
         event_raw.select_one(".categories_list .widget_value"))
 
     event_data = {
-            "title": title,
-            "date": date,
-            "location": location,
-            "categories": categories,
-            "thumbnail": thumbnail
-        }
+        "title": title,
+        "date": date,
+        "location": location,
+        "categories": categories,
+        "thumbnail": thumbnail
+    }
     # event_data = {name: {}}
 
     # event_data_json = json.dumps(event_data)
