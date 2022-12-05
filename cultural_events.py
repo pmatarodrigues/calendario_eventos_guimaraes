@@ -4,6 +4,10 @@ def get_event_name(event_raw):
     return event_raw.select_one(".title .widget_value").h2.getText()
 
 
+def get_event_categories(categories):
+    category = categories.select_one(".primary_category .label").getText()
+    return {"category": category}
+
 url = "http://em.guimaraes.pt/agenda"
 
 html_doc = getHTMLdoc(url)
