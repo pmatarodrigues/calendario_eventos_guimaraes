@@ -1,3 +1,19 @@
+from bs4 import BeautifulSoup
+import requests
+import re
+import json
+from unidecode import unidecode
+
+emguimaraes_link = "https://em.guimaraes.pt"
+
+
+def getHTMLdoc(url):
+
+    response = requests.get(url, verify=False)
+
+    return response.text
+
+
 
 
 def get_event_name(event_raw):
@@ -73,6 +89,7 @@ def get_event_date(date, time_table):
     # print(date_formatted)
 
     return date_formatted
+
 
 url = "http://em.guimaraes.pt/agenda"
 
