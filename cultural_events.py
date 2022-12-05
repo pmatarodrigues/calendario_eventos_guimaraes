@@ -8,6 +8,13 @@ def get_event_categories(categories):
     category = categories.select_one(".primary_category .label").getText()
     return {"category": category}
 
+
+def get_event_thumbnail(thumb):
+    alt = thumb.get('alt')
+    link = emguimaraes_link + thumb.get('src')
+    return {"link": link, "alt": alt}
+
+
 url = "http://em.guimaraes.pt/agenda"
 
 html_doc = getHTMLdoc(url)
