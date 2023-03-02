@@ -3,8 +3,12 @@ import requests
 import re
 import json
 from unidecode import unidecode
+from flask import Flask, jsonify
+from datetime import datetime
 
 emguimaraes_link = "https://em.guimaraes.pt"
+
+app = Flask(__name__)
 
 
 def getHTMLdoc(url):
@@ -44,6 +48,9 @@ def parse_event(event_raw):
     }
 
     return event_data
+
+
+#TODO: adicionar verificações, se existe antes de trabalhar dados
 
 
 def get_event_name(event_raw):
@@ -120,20 +127,35 @@ def get_event_date(date, time_table):
     return date_formatted
 
 
-url = "http://em.guimaraes.pt/agenda"
+@app.route('/')
+def main():
+    eventos = {}
 
-html_doc = getHTMLdoc(url)
+    page = 1
 
-soup = BeautifulSoup(html_doc, 'html.parser')
+    date = datetime.today()
 
-titulos = soup.findAll('h2')
+    while (True):
+        url = "https://em.guimaraes.pt/agenda?geo_events_list_29_page=" + str(
+            page) + "&paginating=true&start_date=" + str(date)
 
-eventos = {}
+        html_doc = getHTMLdoc(url)
 
-for event in soup.select('.cell .linl_block .linl_inner'):
+        soup = BeautifulSoup(html_doc, 'html.parser')
 
-    event_data = parse_event(event)
-    title = event.find('h2').getText()
-    eventos[title] = event_data
+        event_data = {}
 
-print(json.dumps(eventos))
+        for event in soup.select('.cell .linl_block .linl_inner'):
+
+            event_data = parse_event(event)
+            title = event.find('h2').getText()
+            eventos[title] = event_data
+
+        if event_data == {}: break
+
+        page += 1
+
+    return json.dumps(eventos)
+
+
+app.run()
