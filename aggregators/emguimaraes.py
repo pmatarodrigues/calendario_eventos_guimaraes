@@ -1,7 +1,8 @@
 from datetime import datetime
 from bs4 import BeautifulSoup
 import json
-from utils.scrapping import getHTMLdoc
+from utils.EventScrapper import EventScrapper
+from utils.EventParser import EventParser
 
 class Emguimaraes:
     baseUrl = "https://em.guimaraes.pt/"
@@ -14,13 +15,30 @@ class Emguimaraes:
 
         while (True):
             url = f'{cls.baseUrl}agenda?geo_events_list_29_page={str(page)}&paginating=true&start_date={str(date)}'
-            html_doc = getHTMLdoc(url)
+            html_doc = EventScrapper.getHTMLdoc(url)
             soup = BeautifulSoup(html_doc, 'html.parser')
 
             event_data = {}
 
             for event in soup.select('.cell .linl_block .linl_inner'):
-                event_data = cls.parse_event(event)
+                date = {
+                    "dates": event.select_one(".dates .widget_value"),
+                    "timetable": event.select_one(".timetable .widget_value")
+                }
+                title = {
+                    "title": event.select_one(".title .widget_value"),
+                    "summary": event.select_one(".summary .widget_value")
+                }
+                location = {
+                    "venue_id": event.select_one(".venue_id .widget_value"),
+                    "descriptive_location": event.select_one(
+                        ".descriptive_location .widget_value"),
+                    "address": event.select_one(".address .widget_value .writer_text")
+                }
+                thumbnail = event.select_one(".thumbnail .widget_value img")
+                categories = event.select_one(".categories_list .widget_value")
+
+                event_data = EventParser.parse(cls, date, title, location, thumbnail, categories)
                 title = event.find('h2').getText()
 
                 eventos[title] = event_data
@@ -106,34 +124,3 @@ class Emguimaraes:
         }
 
         return date_formatted
-
-    @classmethod
-    def parse_event(cls, event_raw):
-        name = cls.get_event_name(event_raw)
-
-        date = cls.get_event_date(event_raw.select_one(".dates .widget_value"),
-                            event_raw.select_one(".timetable .widget_value"))
-
-        title = cls.get_event_title(event_raw.select_one(".title .widget_value"),
-                                event_raw.select_one(".summary .widget_value"))
-
-        location = cls.get_event_location(
-            event_raw.select_one(".venue_id .widget_value"),
-            event_raw.select_one(".descriptive_location .widget_value"),
-            event_raw.select_one(".address .widget_value .writer_text"))
-
-        thumbnail = cls.get_event_thumbnail(
-            event_raw.select_one(".thumbnail .widget_value img"))
-
-        categories = cls.get_event_categories(
-            event_raw.select_one(".categories_list .widget_value"))
-
-        event_data = {
-            "title": title,
-            "date": date,
-            "location": location,
-            "categories": categories,
-            "thumbnail": thumbnail
-        }
-
-        return event_data
